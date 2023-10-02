@@ -1,6 +1,7 @@
 import "./style.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 import maplibregl from "maplibre-gl";
+import osm2geojson from "osm2geojson-lite";
 
 const map = new maplibregl.Map({
   container: "map",
@@ -30,3 +31,20 @@ const map = new maplibregl.Map({
 });
 
 map.addControl(new maplibregl.NavigationControl({}));
+
+const fetchRelation = (async () => {
+  try {
+    const rawResponse = await fetch(
+      "https://overpass-api.de/api/interpreter?data=%5Bout%3Axml%5D%5Btimeout%3A25%5D%3B%0Arel%284666995%29%3B%0A%3E%3B%0Aout%20skel%20qt%3B%0A"
+    );
+    try {
+      const content = await rawResponse.text();
+      const geojson = osm2geojson(content);
+      console.log(geojson);
+    } catch (e) {
+      console.log(e);
+    }
+  } catch (e) {
+    console.log(e);
+  }
+})();
